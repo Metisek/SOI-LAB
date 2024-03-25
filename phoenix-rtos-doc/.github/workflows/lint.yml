@@ -1,0 +1,44 @@
+# vim:sw=2:ts=2
+# static linters which can be run in a single repo (do not need phoenix-rtos-project)
+name: lint
+
+# on events
+on:
+  pull_request:
+    branches:
+      - master
+      - 'feature/*'
+
+jobs:
+  markdownlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: reviewdog/action-markdownlint@v0
+        with:
+          github_token: ${{ secrets.github_token }}
+          reporter: github-pr-review
+          fail_on_error: true
+
+  misspell:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: reviewdog/action-misspell@v1
+        with:
+          github_token: ${{ secrets.github_token }}
+          reporter: github-pr-review
+          fail_on_error: true
+
+
+  languagetool:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: reviewdog/action-languagetool@v1
+        with:
+          github_token: ${{ secrets.github_token }}
+          reporter: github-pr-review
+          disabled_rules: "ENGLISH_WORD_REPEAT_RULE,RB_RB_COMMA[3],REP_PASSIVE_VOICE[6],AI[1],ID_CASING[2],ENGLISH_WORD_REPEAT_BEGINNING_RULE,EN_UNPAIRED_BRACKETS"
+          # TODO: make languagetool not check the code blocks and enable back rules mentioned below:
+          # "ENGLISH_WORD_REPEAT_RULE,RB_RB_COMMA[3],AI[1],ID_CASING[2],EN_UNPAIRED_BRACKETS"
